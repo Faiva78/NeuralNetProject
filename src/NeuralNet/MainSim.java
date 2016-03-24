@@ -5,56 +5,50 @@
  */
 package NeuralNet;
 
-
 import java.util.ArrayList;
 
-
-
 public class MainSim {
-       
+
     /**
      * main method
      *
      * @param args
      */
     public static void main(String[] args) {
-        
-        Enviroment env =new Enviroment();
 
-        
-        
-        
+        Enviroment env = new Enviroment();
+
         Func function = new Func("(sin((2*x)*3.1416)+1)/2");
-        
+
         System.out.println("-------START OF TRAINING CYCLE ----------");
-        //train the net with the function 
-        
-        
-        env.TrainFunction(function);
-        
+
+        //train the net with the function        
+        Train.useErrorsMode = false;
+        BackPropagation.ETA = 1;
+        BackPropagation.MOMENTUM = 0.1;
+        env.NumOfEpochs = 50000;
+        env.delay = 250;
+        env.minError = 0.0010;
+        env.numOfSamples = 30;
+        env.TrainFunction(function, false);
+
         System.out.println("-------END OF TRAINING CYCLE ----------");
 
         ArrayList<Net> SaveLList = new ArrayList<>();
 
-        if (!env.FitnessList.isEmpty()) {
-            System.out.println("-------FITNESS SAVING----------");
-            SaveLList = env.FitnessList;
-
-        } else {
-            SaveLList = env.NetList;
-            System.out.println("-------NETLIST SAVING ----------");
-        }
-
-        env.printNetData(SaveLList);
+        SaveLList.add(env.net);
+        Uti.printNetData(SaveLList, env.data);
 
         // populate all net NetData with function
         for (Net net : SaveLList) {
-            net.NetData.DataFunc1P(function, 0, 1, 0.01);
-            net.evaluatSamples();
+
+            env.data.DataFunc1P(function, 0, 1, 0.01);
+            Feedforward.evaluate(net, env.data);
+            //net.evaluatSamples();
         }
 
         //export and save nets NetData on CSV
-        env.saveNetAndDataCSV(SaveLList);
+        Uti.saveNetAndDataCSV(SaveLList, env.data);
     }
-    
+
 }

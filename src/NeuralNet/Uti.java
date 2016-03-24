@@ -1,8 +1,12 @@
 package NeuralNet;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.StringTokenizer;
 
 public class Uti {
@@ -168,5 +172,268 @@ public class Uti {
         }
         return out;
     }
+    
+        /**
+     * find the previous layer
+     *
+     * @param inLayer layer to be computed
+     * @return a layer where is connected
+     * @deprecated not in use
+     */
+    private Layer findLLayer(Layer inLayer) {
+
+        // temporary list of all precedent neurons
+        ArrayList<Neurone> Neuronlist = new ArrayList<>();
+
+        // layer to be returned
+        Layer returnLayer = new Layer();
+
+        // foe every neuron in inLayer
+        for (Neurone layerNeuron : inLayer.layerNeurons) {
+
+            //for every axonfrom the neuron of the layer
+            for (Assone axonFrom : layerNeuron.axonFrom) {
+
+                // get the neuron where theaxon is connected
+                Neurone neuronFrom = axonFrom.fromNeuron;
+
+                // if is a bias then add the neuron to the layer
+                if (neuronFrom.isBias) {
+                    returnLayer.neuronBias = neuronFrom;
+                } else if (!Neuronlist.contains(neuronFrom)) {// if is not a bias and is not contained in the list so add it to the neurolist
+                    Neuronlist.add(neuronFrom);
+                }
+            } // end of axofrom cycle    
+        } // end of neurons cycle
+        // now we have all the neurons of layer -1
+        returnLayer.layerNeurons = Neuronlist;
+        return returnLayer;
+    }
+    
+    
+     /**
+     * load a net
+     *
+     * @param location where to load
+     * @param net the net where to load
+     */
+    public static void loadNet(String location,Net net) {
+        char separator = (char) 9; //tab
+
+        //open a buffered reader
+        try ( // open afile reader
+                FileReader fileReader = new FileReader(location)) {
+            //open a buffered reader
+            BufferedReader reader = new BufferedReader(fileReader);
+
+            // init the line string
+            String line = "";
+
+            //read topology line
+            line = reader.readLine();
+
+            //create the net
+            net.createNet(line);
+
+            for (Layer layer : net.LayerList) {
+
+                //read layer line
+                line = reader.readLine();
+                //String[] LayerLine = line.split(String.valueOf(separator));
+
+                for (Neurone neurone : layer.layerNeurons) {
+
+                    //read neuron line
+                    line = reader.readLine();
+                    //String[] neuronLine = line.split(String.valueOf(separator));
+
+                    for (Assone axonFrom : neurone.axonFrom) {
+                        //read axon line
+
+                        line = reader.readLine();
+                        String[] axonLine = line.split(String.valueOf(separator));
+                        axonFrom.weight = Double.valueOf(axonLine[3]);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new Error("Error in loadNet");
+        }
+
+    }
+
+    /**
+     * save the net
+     *
+     * @param Location location onwhere to save
+     * @param net the net to be saved
+     */
+    public static void saveNet(String Location,Net net) {
+
+        //set the carachters
+        try (FileWriter fileWriter = new FileWriter(Location) // --------------- save the net-----------//
+                ) {
+            //set the carachters
+            char newLine = (char) 13;  //return
+            char separator = (char) 9; //tab
+
+            //add the topology
+            fileWriter.append(net.getTopology() + newLine);
+
+            // for each layer
+            for (Layer layer : net.LayerList) {
+
+                //write the layer number and bias neuron number
+                fileWriter.append("Layer:" + separator + String.valueOf(layer.idGet()) + separator);
+                fileWriter.append("NeuronBias:" + separator + String.valueOf(layer.neuronBias.idGet()) + newLine);
+
+                //for each neuron in layer
+                for (Neurone layerNeuron : layer.layerNeurons) {
+
+                    // write the neuron number; Neuron: x
+                    fileWriter.append("Neuron:" + separator + String.valueOf(layerNeuron.idGet()) + newLine);
+
+                    // for every axon from
+                    for (Assone axonFrom : layerNeuron.axonFrom) {
+
+                        // write the axon number and weight: Axon;  x   Weight: y
+                        fileWriter.append("Axon:" + separator + String.valueOf(axonFrom.idGet()) + separator);
+                        fileWriter.append("Weight:" + separator + String.valueOf(axonFrom.weight) + separator);
+                        fileWriter.append("NeuronFrom:" + separator + String.valueOf(axonFrom.fromNeuron.idGet()) + newLine);
+                    }
+
+                }
+
+            }
+            // --------------- save the net-----------//
+            fileWriter.flush();
+        } //return
+        catch (IOException ex) {
+            throw new Error("Error in saveNet");
+        }
+    }
+
+    
+    
+    
+      public static void saveNetAndDataCSV(ArrayList<Net> netList,Data data) {
+
+        // export NetData
+        String Dir = System.getProperty("user.home");
+        String file = "/TestNet";
+        String Extension = ".csv";
+        int num = 0;
+
+        //for every net
+        for (Net net : netList) {
+
+            StringBuilder fileLocation = new StringBuilder();
+
+            //create a file string
+            fileLocation.append(Dir).append(file).append(String.valueOf(num)).append(Extension);
+
+            //append net informations
+            StringBuilder info = new StringBuilder();
+            char delimiter = (char) 9;
+            info.append("Topology;");
+            info.append(net.getTopology());
+            info.append(delimiter);
+
+            //info.append("Training cost: ");
+            //info.append(String.valueOf(Train.TrainingCost));
+            //info.append(delimiter);
+
+            info.append("Overall error: ");
+            info.append(String.valueOf(data.getDataError()));
+            info.append(delimiter);
+            info.append((char) 13);
+
+            //export net sample NetData
+            data.exportSampleDataToCSV(fileLocation.toString());
+            //add the NetData info
+            Uti.fileAppendLine(info.toString(), fileLocation.toString());
+
+            // save the net
+            fileLocation = new StringBuilder();
+            Uti.saveNet(fileLocation.append(Dir).append(file).append(String.valueOf(num)).append(".net").toString(), net);
+            num++;
+        }
+
+    }
+
+    public static void printNetData(ArrayList<Net> list,Data data) {
+        int N = 0;
+        for (Net net : list) {
+            double error = data.getDataError();
+            StringBuilder str = new StringBuilder();
+
+            str.append(String.format("N:%d ", N));
+            str.append((char) 9);
+            str.append(String.format("E:%.3f", error));
+            str.append((char) 9);
+           // str.append(String.format("C:%.4f", Train.TrainingCost));
+           // str.append((char) 9);
+
+            str.append(net.getTopology());
+
+            str.append(String.format("%n"));
+            System.out.print(str.toString());
+            N++;
+        }
+        System.out.println("");
+    }
+    
+    
+        /**
+     * creaet a single random net
+     *
+     * @param in how many inputs >1
+     * @param out hw many outputs >1
+     * @param maxLayer maximum layer number
+     * @param minNeurons mininmum of neuron per layer >1
+     * @param maxNeurons maximum neuron number per layer
+     * @return the newly rcreated random net
+     *
+     */
+    public Net RandomNet(int in, int out, int maxLayer, int minNeurons, int maxNeurons) {
+        // set the separato char
+        char separator = (char) ",".charAt(0);
+
+        // create a random generator
+        Random rnd = new Random();
+
+        //create a new string builder
+        StringBuilder topo = new StringBuilder("");
+
+        // add the input neurons to topology
+        topo.append(String.valueOf(in));
+        topo.append(separator);
+
+        // generate the random number of layers
+        int layers = rnd.nextInt(maxLayer);
+
+        // for every layer
+        for (int i = 0; i <= layers; i++) {
+
+            // generate a random seuron number
+            int neurons = rnd.nextInt(maxNeurons - minNeurons) + minNeurons;
+
+            // append to topology string
+            topo.append(neurons);
+            topo.append(separator);
+        }
+        // add the output neurons to topology
+        topo.append(out);
+
+        // create a new net object
+        Net net = new Net();
+
+        // create the net topology
+        net.createNet(topo.toString());
+
+        //return the nrandom net
+        return net;
+    }
+    
 
 }
