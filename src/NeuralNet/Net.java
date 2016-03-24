@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Net extends Canvas{
+public class Net extends Canvas {
     //TODO implementing momentum
 
     /*  ------------------------------------
@@ -28,12 +28,17 @@ public class Net extends Canvas{
      * the total error of the NetData
      *
      */
-    public double DataError=0;
+    public double DataError = 0;
 
     /**
      * Learning rate
      */
-    public double ETA = 0.05;
+    public double ETA = 1;
+
+    /**
+     * Momentum
+     */
+    public double Momentum = 0.1;
 
     /**
      * Activation function
@@ -66,7 +71,7 @@ public class Net extends Canvas{
      *
      * @param inLayer layer to be computed
      * @return a layer where is connected
-     *
+     * @deprecated not in use
      */
     private Layer findLLayer(Layer inLayer) {
 
@@ -98,56 +103,50 @@ public class Net extends Canvas{
         return returnLayer;
     }
 
-    public void learnBatchWeighted() {
-
-    }
+ 
 
     /**
      * Run a single batch of backpropagation learning
      *
      *
-     * @param withErrorCompensation enable repetition of most erroneus sample data
+     * @param withErrorCompensation enable repetition of most erroneus sample
+     * data
      */
     public void learnBatch(boolean withErrorCompensation) {
-        
-        
-        double totErr=NetData.getDataError();  // FIXIT
-        Random rand=new Random();
-        
-        
-        ArrayList<Integer> ListeRepetitions=new ArrayList<>();
+
+        double totErr = NetData.getDataError();  // FIXIT
+        Random rand = new Random();
+
+        ArrayList<Integer> ListeRepetitions = new ArrayList<>();
 
         for (Data.Sample sample : NetData.SampleList) {
-            
-            int sampleErrorCountNumber=0;//FIXIT
+
+            int sampleErrorCountNumber = 0;//FIXIT
             if (withErrorCompensation) {
-                sampleErrorCountNumber= (int)(NetData.SampleList.size()*(sample.sampleError/totErr));
+                sampleErrorCountNumber = (int) (NetData.SampleList.size() * (sample.sampleError / totErr));
             }
-            ListeRepetitions.add(sampleErrorCountNumber+1);
+            ListeRepetitions.add(sampleErrorCountNumber + 1);
 
         }
         for (Integer ListeRepetition : ListeRepetitions) { //FIXIT
             int e = ListeRepetition;
             for (int j = 0; j < e; j++) {
-                
+
                 //get a sample
                 Data.Sample sample = NetData.SampleList.get(rand.nextInt(NetData.SampleList.size()));
-                
-                
+
                 // evaluate the net output
                 evaluateSample(sample);
-                
+
                 // backpropoagation algorythm
                 Backprop(sample);
-                
+
                 // evaluate the net output
                 evaluateSample(sample);
-                
+
             }
         }
-        
-        
-        
+
         // increase the  counter of training batches
         TrainingBtaches++;
 
@@ -325,6 +324,9 @@ public class Net extends Canvas{
         // work first on the last output layer
         Layer outlayer = LayerList.get(LayerList.size() - 1);
 
+        //set the last layer total error
+        outlayer.LayerError = 0;
+
         //for every neuron in the last layer CALCULATE OUTPUT ERROR and new weighs
         for (int n = 0; n < outlayer.layerNeurons.size(); n++) {
 
@@ -354,11 +356,15 @@ public class Net extends Canvas{
                 //  partial derivative of the total error with respect to weight
                 dError_dWeight = dError_dOut * dOut_dNet * dNet_dWeight;
 
-                //  set the axon deltaError delta( to be update)
+                //  set the axon deltaError delta( to be updated)
                 assoneIn.deltaError = dError_dWeight;   //assoneIn.newWeight = assoneIn.weight-(learningRate * dError_dW);
 
                 /// the new weights MUST BE updated after the full propagation
             }
+
+            //update the last layer total error
+            outlayer.LayerError = outlayer.LayerError + (dError_dOut * dOut_dNet);
+
         }
         // end of last layer
 
@@ -385,29 +391,29 @@ public class Net extends Canvas{
                     ArrayList<Assone> assoneInList = neuron.axonFrom;
 
                     // get the relative desidered output
-                    ArrayList<Neurone> lastlayerNeuronList = LayerList.get(LayerList.size() - 1).layerNeurons;
-
-                    double dErrotTot_OutH = 0;
-
+                    //ArrayList<Neurone> lastlayerNeuronList = LayerList.get(LayerList.size() - 1).layerNeurons;
+                    //double dErrotTot_OutH = 0;
+                    //Layer lastlayer= LayerList.get(LayerList.size()-1);
+                    //lastlayer.LayerError=0;
                     //for every neuron in the last layer
-                    for (Neurone lastneuron : lastlayerNeuronList) {
+                    //for (Neurone lastneuron : lastlayerNeuronList) {
                         //  calculate delta of output neurons
-                        double dErrorH_dOutH = lastneuron.dError_dOut * lastneuron.dOut_dNet; // ALREADY CALCULATED
-
+                    //double dErrorH_dOutH = lastneuron.dError_dOut * lastneuron.dOut_dNet; // ALREADY CALCULATED
                         // sum of the partial devivaives of output 
-                        dErrotTot_OutH = dErrotTot_OutH + dErrorH_dOutH;
-                    }
-
+                    //dErrotTot_OutH = dErrotTot_OutH + dErrorH_dOutH;
+                    //}
                     // differentiate the output with respect to net totoal weights
                     dOutH_dNetH = neuron.ActivationFunction.derivation(neuron.getWeight());
 
                     // for each azon in neuron input
                     for (Assone assoneIn : assoneInList) {
+
                         //differentiate the net total weights with respect to axon weight
                         dNet_dEighth = assoneIn.fromNeuron.A_activation; //out of prevous neuron
 
                         //  partial derivative of the total error with respect to weight
-                        dError_dWeightH = dErrotTot_OutH * dOutH_dNetH * dNet_dEighth;
+                        //dError_dWeightH = dErrotTot_OutH * dOutH_dNetH * dNet_dEighth;
+                        dError_dWeightH = outlayer.LayerError * dOutH_dNetH * dNet_dEighth;
 
                         //  set the axon deltaError delta( to be update)
                         assoneIn.deltaError = dError_dWeightH;   //assoneIn.newWeight = assoneIn.weight-(learningRate * dError_dW);
@@ -417,27 +423,36 @@ public class Net extends Canvas{
             }
         }
         /// the new weights MUST BE updated after the full propagation
-        updateAllWeights(ETA);
+        updateAllWeights();
     }
 
     /**
      * Update all the weight with the eta learning rate
      */
-    private void updateAllWeights(double ETA) {
+    private void updateAllWeights() {
 
+        //for every layer excluded the first (no weights availables)
         for (int i = 1; i < LayerList.size(); i++) {
+
+            //get the current layer
             Layer layer = LayerList.get(i);
 
-            //for evert layer
-            for (Neurone layerNeuron : layer.layerNeurons) {
-                ArrayList<Neurone> neurons = layer.layerNeurons;
+            //for every neuron in layer
+            for (Neurone neuron : layer.layerNeurons) {
 
-                //for every neuron
-                for (Neurone neuron : neurons) {
-                    neuron.updateFromAxonWeights(ETA);
+                //foe everu axon from in ineuron
+                for (Assone axonFrom : neuron.axonFrom) {
+                    
+                    // update the weight with eta and momentum
+                    axonFrom.weight = axonFrom.weight - ((ETA * axonFrom.deltaError) + (Momentum * axonFrom.deltaError_1)); // plus momentum * delteE-1
+                    
+                    //update the last deltaerror with current
+                    axonFrom.deltaError_1 = axonFrom.deltaError;
                 }
+
             }
         }
+
     }
 
     /**

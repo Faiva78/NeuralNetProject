@@ -1,6 +1,7 @@
 package NeuralNet;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
@@ -105,33 +106,42 @@ public class Enviroment extends JPanel {
         //this.setSize(frame.getWidth()/2, frame.getHeight()/2);
     }
 
-
     @Override
     public void paint(Graphics g) {
         //super.paint(g); //To change body of generated methods, choose Tools | Templates.
-        
+
         Graphics2D g2d = (Graphics2D) g;
-        
-        int h=this.getHeight();
-        int w=this.getWidth();
-        
+
+        int h = this.getHeight();
+        int w = this.getWidth();
+
         g2d.setColor(Color.red);
-        g2d.draw(new Line2D.Double(0, ((1-minError)*h), w, (1-minError)*h));
-        
+        g2d.draw(new Line2D.Double(0, ((1 - minError) * h), w, (1 - minError) * h));
+
         g2d.setColor(Color.BLACK);
-        double bat=0;
-        double xx=0;
-        double yy=0;
+        double bat = 0;
+        double xx = 0;
+        double yy = 0;
         if (!NetList.isEmpty()) {
             bat = NetList.get(0).TrainingBtaches;
-            yy = (((1- NetList.get(0).DataError)) * h);
-            xx =  ((bat / NumOfTrainingLoops) * w);
+            yy = (((1 - NetList.get(0).DataError)) * h);
+            xx = ((bat / NumOfTrainingLoops) * w);
+
         }
 
         g2d.draw(new Line2D.Double(xx_old, yy_old, xx, yy));
 
         xx_old = xx;
         yy_old = yy;
+
+        g2d.setColor(Color.black);
+        g2d.fillRect(0, 0, w, 50);
+        g2d.setColor(Color.WHITE);
+        g2d.setFont(new Font("arial", Font.PLAIN, 30));
+        StringBuilder str = new StringBuilder();
+        str.append(String.format("Error: %.5f %n", NetList.get(0).DataError));
+        str.append(String.format("Run: %d %n", NumOfTrainingLoops));
+        g2d.drawString(str.toString(), 30, 30);
 
     }
 
@@ -141,22 +151,27 @@ public class Enviroment extends JPanel {
      * @param function he function to train
      */
     public void TrainFunction(Func function) {  //TODO  develop enviroment 
-    
-        initFrame()
-                ;
+
+        initFrame();
         String fileLocation = "C:\\Users\\alessia/TestNet0.net";
 
-        boolean load = true;
+        boolean load = false;
 
-        boolean errorCompensatrion = true;
+        minError = 0.010;
+
+        boolean errorCompensatrion = false; //XXX not working
 
         // create the NetData for the net (double because cant divide with int)
         double numOfSamples = 100;
 
-        double eta =1.5;
+        double eta = 1;
+
+        double momemtum = 0.1;
 
         //delay of visualization
         long delay = 1000;
+
+        NumOfTrainingLoops = 100000;
 
         //when change the training NetData
         long traininChange = 5000;
@@ -185,6 +200,7 @@ public class Enviroment extends JPanel {
             net.loadNet(fileLocation);
             net.NetData.SampleList.clear();
             net.ETA = eta;
+            net.Momentum = momemtum;
             net.NetData.DataFunc1P(function, 0, 1, 1 / numOfSamples);
             NetList.add(net);
 

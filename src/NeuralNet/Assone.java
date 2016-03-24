@@ -16,10 +16,14 @@ public class Assone extends Cellula{
     /** delta error dalculated by backpopagation */
     public double deltaError;
     
+    /** previous delta error dalculated by backpopagation */
+    public double deltaError_1=0;
+    
     /** update the axon weight
      * @param learningRate */
-    public void updateWeight(double learningRate){
-        double x =weight-((learningRate* deltaError)*1);
+    public void updateWeight(double learningRate,double momentum){
+        double x = weight - ((learningRate* deltaError)+(momentum*deltaError_1)); // plus momentum * delteE-1
+        deltaError_1=deltaError;
         deltaError=0;
         weight=x;
     }

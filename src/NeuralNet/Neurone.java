@@ -2,29 +2,27 @@ package NeuralNet;
 
 import java.util.ArrayList;
 
-
 public class Neurone extends Cellula {
 
-    /** neuron output*/
+    /**
+     * neuron output
+     */
     public double A_activation = 0;
-    public double dError_dOut,dOut_dNet;
-    
-    public boolean isBias=false;
-    
-    /** neuron net error */
-    //public double E_error = 0;
-    
-    /**activation function */
+    public double dError_dOut, dOut_dNet;
+
+    public boolean isBias = false;
+
+    /**
+     * activation function
+     */
     //public Func ActivationFunction = new Func(" 1 / ( 1 + ( e ^ ( - 1 * ( x - 1 ) ) ) )");
-    public Func ActivationFunction ; // more fast function computation
-    
-    /** list of axon where is connected from */
+    public Func ActivationFunction; // more fast function computation
+
+    /**
+     * list of axon where is connected from
+     */
     public ArrayList<Assone> axonFrom = new ArrayList<>();
 
-    
-    
-    
-    
     //return the sum of the weights
     public double getWeight() {
 
@@ -43,18 +41,4 @@ public class Neurone extends Cellula {
         //returnd the average the weighted sum W
         return weightedSum / axonFrom.size();
     }
-
- 
-
-    /**
-     * update the neuron axon bias weight
-     * @param learningRate
-     */
-    public void updateFromAxonWeights(double learningRate) {
-        for (Assone axon : axonFrom) {
-            axon.updateWeight(learningRate);
-        }
-
-    }
-
 }
