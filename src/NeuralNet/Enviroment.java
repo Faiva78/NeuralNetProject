@@ -5,7 +5,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
-import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -42,20 +41,101 @@ public class Enviroment extends JPanel {
     private double yy_old = 0;
     private long Epoch = 0;
     private long partialTraining = 0;
-    
 
     //numner of trainig loops
-    public int NumOfEpochs = 250000;
+    public int NumOfEpochs = 1;
 
+    public String topo="1,1";
     // minimum fitness error
-    public double minError = 0.010;
+    public double minError = 1;
 
+    public long delay = 1000;
+    public double numOfSamples = 10;
 
-    public long delay = 250;
-    public double numOfSamples = 30;
+    public static void main(String[] args) {
 
+        Enviroment env = new Enviroment();
 
+        Func function = new Func("(sin((2*x)*3.1416)+1)/2");
 
+        //train the net with the function        
+        Train.useErrorsMode = true;
+        BackPropagation.ETA = 1;
+        BackPropagation.MOMENTUM = 0.1;
+        env.topo="1,8,1";
+        env.NumOfEpochs = 50000;
+        env.delay = 500;
+        env.minError = 0.210;
+        env.numOfSamples = 30;
+        env.TrainFunction(function, false);
+
+        Uti.printNetData(env.net, env.data);
+
+        Uti.DataFunc1P(function, 0, 1, 0.01, env.data);
+        Feedforward.evaluate(env.net, env.data);
+
+        //export and save nets NetData on CSV
+        Uti.saveNetAndDataCSV(env.net, env.data);
+    }
+    
+    /**
+     * train enviroment for afunctions
+     *
+     * @param function he function to train
+     * @param load
+     */
+    public void TrainFunction(Func function, boolean load) {  //TODO  develop enviroment 
+
+        initFrame();
+        String fileLocation = "C:\\Users\\alessia/TestNet0.net";
+
+        data = new Data();
+        Uti.DataFunc1P(function, 0, 1, 1 / numOfSamples, data);
+
+        net = new Net();
+
+        if (load) {
+            Uti.loadNet(fileLocation, net);
+        } else {
+            net.createNet(topo);
+        }
+        long time = System.currentTimeMillis();
+
+        // runs counter
+        Epoch = 0;
+
+        //for all trainig loops until fitness solution found or max training loops 
+        while ((Epoch < NumOfEpochs)) {
+
+            //increase the counter of total trainings
+            Epoch++;
+
+            //increase the counter of partial trainings
+            partialTraining++;
+
+            //Train.TrainNet(net, data);
+            Train.trainNetRandom(net, data);
+
+            if ((System.currentTimeMillis() - time) > delay) {
+
+                // paint the data
+                this.repaint();
+
+                // reset the current time
+                time = System.currentTimeMillis();
+
+            } 
+
+            boolean err = (data.getDataError() < minError);
+            if (err) {
+                this.repaint();
+                break;
+            }
+
+        } 
+
+    }
+    
 
     private void initFrame() {
         frame = new JFrame();
@@ -152,55 +232,6 @@ public class Enviroment extends JPanel {
 
     }
 
-    /**
-     * train enviroment for afunctions
-     *
-     * @param function he function to train
-     */
-    public void TrainFunction(Func function, boolean load) {  //TODO  develop enviroment 
-
-        initFrame();
-        String fileLocation = "C:\\Users\\alessia/TestNet0.net";
-
-        data.DataFunc1P(function, 0, 1, 1 / numOfSamples);
-
-        net = new Net();
-        if (load) {
-            Uti.loadNet(fileLocation, net);
-        } else {
-            net.createNet("1,8,1");
-        }
-        long time = System.currentTimeMillis();
-
-        //total training
-        partialTraining = 0;
-
-        // runs counter
-        Epoch = 0;
-
-        //for all trainig loops until fitness solution found or max training loops 
-        while ((Epoch < NumOfEpochs)) {
-
-            //increase the counter of total trainings
-            Epoch++;
-
-            //increase the counter of partial trainings
-            partialTraining++;
-
-            Train.TrainNet(net, data);  //net.TrainNet(errorCompensatrion);
-
-            if ((System.currentTimeMillis() - time) > delay) {
-
-                // paint the data
-                this.repaint();
-
-                // reset the current time
-                time = System.currentTimeMillis();
-
-            } // ---------------end of output NetData
-
-        }  // ----------------end of trainig cycle 
-
-    }
+    
 
 }

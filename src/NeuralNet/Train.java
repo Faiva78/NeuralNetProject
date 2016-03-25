@@ -12,22 +12,36 @@ import java.util.Random;
  *
  * @author faiva78
  */
-public  class Train {
+public class Train {
 
     /**
      * number of training batches performed on this
      */
-    public static  long trainingBatches = 0;
-    
-    public static  boolean  useErrorsMode=false;
-    
-    
-     public static void TrainNet(Net net, Data data) {
+    public static long trainingBatches = 0;
+
+    public static boolean useErrorsMode = false;
+
+    private static final Random rand = new Random();
+
+    public static void trainNetRandom(Net net, Data data) {
+        
+        for (int i = 0; i < data.SampleList.size(); i++) {
 
          
-         
+            Data.Sample ss = data.SampleList.get(rand.nextInt(data.SampleList.size()));
+            
+            Feedforward.evaluate(net, ss);
+            
+            BackPropagation.evaluate(net, ss);
+            
+          
+        }
+          trainingBatches++;
+    }
+
+    public static void TrainNet(Net net, Data data) {
+
         double totErr = data.getDataError();  // FIXIT
-        Random rand = new Random();
 
         ArrayList<Integer> ListeRepetitions = new ArrayList<>();
 
@@ -35,6 +49,7 @@ public  class Train {
 
             int sampleErrorCountNumber = 0;//FIXIT
             if (useErrorsMode) {
+                
                 sampleErrorCountNumber = (int) (data.SampleList.size() * (sample.sampleError / totErr));
             }
             ListeRepetitions.add(sampleErrorCountNumber + 1);
@@ -42,6 +57,7 @@ public  class Train {
         }
         for (Integer ListeRepetition : ListeRepetitions) { //FIXIT
             int e = ListeRepetition;
+            
             for (int j = 0; j < e; j++) {
 
                 //get a sample
@@ -53,7 +69,6 @@ public  class Train {
                 // backpropoagation algorythm
                 BackPropagation.evaluate(net, sample);
 
-
             }
         }
 
@@ -61,6 +76,5 @@ public  class Train {
         trainingBatches++;
 
     }
-    
-    
+
 }

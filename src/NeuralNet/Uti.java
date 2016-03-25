@@ -172,8 +172,8 @@ public class Uti {
         }
         return out;
     }
-    
-        /**
+
+    /**
      * find the previous layer
      *
      * @param inLayer layer to be computed
@@ -209,15 +209,14 @@ public class Uti {
         returnLayer.layerNeurons = Neuronlist;
         return returnLayer;
     }
-    
-    
-     /**
+
+    /**
      * load a net
      *
      * @param location where to load
      * @param net the net where to load
      */
-    public static void loadNet(String location,Net net) {
+    public static void loadNet(String location, Net net) {
         char separator = (char) 9; //tab
 
         //open a buffered reader
@@ -268,7 +267,7 @@ public class Uti {
      * @param Location location onwhere to save
      * @param net the net to be saved
      */
-    public static void saveNet(String Location,Net net) {
+    public static void saveNet(String Location, Net net) {
 
         //set the carachters
         try (FileWriter fileWriter = new FileWriter(Location) // --------------- save the net-----------//
@@ -313,10 +312,74 @@ public class Uti {
         }
     }
 
-    
-    
-    
-      public static void saveNetAndDataCSV(ArrayList<Net> netList,Data data) {
+    /**
+     * convert a function with 2 free parameters in a data format
+     *
+     * @param function
+     * @param from
+     * @param to
+     * @param step
+     * @param data
+     */
+    public static void DataFunc2D(Func function, double from, double to, double step, Data data) {
+        data.SampleList.clear();
+        double dat1 = from;
+        double dat2 = from;
+        while (dat1 < to) {
+            if ((to - from) > 0) {
+                dat1 = dat1 + step;
+            } else {
+                dat1 = dat1 - step;
+            }
+            while (dat2 < to) {
+                if ((to - from) > 0) {
+                    dat2 = dat2 + step;
+                } else {
+                    dat2 = dat2 - step;
+                }
+
+            }
+            data.addSample(new double[]{dat1, dat2}, new double[]{function.evaluate(dat1, dat2)});
+        }
+    }
+
+    /**
+     * convert a function with 1 free parameter in a data format
+     *
+     * @param function
+     * @param from
+     * @param to
+     * @param step
+     * @param data
+     */
+    public static void DataFunc1P(Func function, double from, double to, double step, Data data) {
+        data.SampleList.clear();
+        double dat = from;
+        while (dat <= to) {
+            data.addSample(new double[]{dat}, new double[]{function.evaluate(dat)});
+            if ((to - from) > 0) {
+                dat = dat + step;
+            } else {
+                dat = dat - step;
+            }
+
+        }
+    }
+
+    /**
+     * print sample output data
+     *
+     * @deprecated ONLY FOR DEBUGGING
+     */
+    private static void PrintData(Data.Sample sample) {
+
+        for (int i = 0; i < sample.outputData.length; i++) {
+
+            System.out.format("in:%.0f out:%.2f test:%.0f err:%.2f%n", sample.inputData[0], sample.outputData[0], sample.testData[0], sample.sampleError);
+        }
+    }
+
+    public static void saveNetAndDataCSV(Net net, Data data) {
 
         // export NetData
         String Dir = System.getProperty("user.home");
@@ -324,67 +387,61 @@ public class Uti {
         String Extension = ".csv";
         int num = 0;
 
-        //for every net
-        for (Net net : netList) {
 
-            StringBuilder fileLocation = new StringBuilder();
+        StringBuilder fileLocation = new StringBuilder();
 
-            //create a file string
-            fileLocation.append(Dir).append(file).append(String.valueOf(num)).append(Extension);
+        //create a file string
+        fileLocation.append(Dir).append(file).append(String.valueOf(num)).append(Extension);
 
-            //append net informations
-            StringBuilder info = new StringBuilder();
-            char delimiter = (char) 9;
-            info.append("Topology;");
-            info.append(net.getTopology());
-            info.append(delimiter);
+        //append net informations
+        StringBuilder info = new StringBuilder();
+        char delimiter = (char) 9;
+        info.append("Topology;");
+        info.append(net.getTopology());
+        info.append(delimiter);
 
             //info.append("Training cost: ");
-            //info.append(String.valueOf(Train.TrainingCost));
-            //info.append(delimiter);
+        //info.append(String.valueOf(Train.TrainingCost));
+        //info.append(delimiter);
+        info.append("Overall error: ");
+        info.append(String.valueOf(data.getDataError()));
+        info.append(delimiter);
+        info.append((char) 13);
 
-            info.append("Overall error: ");
-            info.append(String.valueOf(data.getDataError()));
-            info.append(delimiter);
-            info.append((char) 13);
+        //export net sample NetData
+        exportSampleDataToCSV(fileLocation.toString(), data);
+        //add the NetData info
+        Uti.fileAppendLine(info.toString(), fileLocation.toString());
 
-            //export net sample NetData
-            data.exportSampleDataToCSV(fileLocation.toString());
-            //add the NetData info
-            Uti.fileAppendLine(info.toString(), fileLocation.toString());
-
-            // save the net
-            fileLocation = new StringBuilder();
-            Uti.saveNet(fileLocation.append(Dir).append(file).append(String.valueOf(num)).append(".net").toString(), net);
-            num++;
-        }
+        // save the net
+        fileLocation = new StringBuilder();
+        Uti.saveNet(fileLocation.append(Dir).append(file).append(String.valueOf(num)).append(".net").toString(), net);
+        num++;
 
     }
 
-    public static void printNetData(ArrayList<Net> list,Data data) {
+    public static void printNetData(Net net, Data data) {
         int N = 0;
-        for (Net net : list) {
-            double error = data.getDataError();
-            StringBuilder str = new StringBuilder();
+        double error = data.getDataError();
+        StringBuilder str = new StringBuilder();
 
-            str.append(String.format("N:%d ", N));
-            str.append((char) 9);
-            str.append(String.format("E:%.3f", error));
-            str.append((char) 9);
-           // str.append(String.format("C:%.4f", Train.TrainingCost));
-           // str.append((char) 9);
+        str.append(String.format("N:%d ", N));
+        str.append((char) 9);
+        str.append(String.format("E:%.3f", error));
+        str.append((char) 9);
+        // str.append(String.format("C:%.4f", Train.TrainingCost));
+        // str.append((char) 9);
 
-            str.append(net.getTopology());
+        str.append(net.getTopology());
 
-            str.append(String.format("%n"));
-            System.out.print(str.toString());
-            N++;
-        }
+        str.append(String.format("%n"));
+        System.out.print(str.toString());
+        N++;
+
         System.out.println("");
     }
-    
-    
-        /**
+
+    /**
      * creaet a single random net
      *
      * @param in how many inputs >1
@@ -434,6 +491,97 @@ public class Uti {
         //return the nrandom net
         return net;
     }
-    
+
+    /**
+     * export all the sample data to a CSV file
+     *
+     * @param location where to save the file
+     * @param data the data to save
+     */
+    public static void exportSampleDataToCSV(String location, Data data) {
+        char delimiter = (char) 9;
+        char newLine = (char) 13;
+        try (FileWriter filewriter = new FileWriter(location)) {
+            filewriter.append("Datasample");
+            filewriter.append(delimiter);
+
+            filewriter.append("Input");
+            filewriter.append(delimiter);
+
+            filewriter.append("Test");
+            filewriter.append(delimiter);
+
+            filewriter.append("Output");
+            filewriter.append(delimiter);
+
+            filewriter.append("Error");
+            filewriter.append(newLine);
+
+            int samNum = 0;
+            for (Data.Sample sample : data.SampleList) {
+
+                filewriter.append(String.valueOf(samNum));
+                filewriter.append(delimiter);
+                for (int i = 0; i < sample.inputData.length; i++) {
+                    double data1 = sample.inputData[i];
+                    filewriter.append(String.valueOf(data1));
+                    filewriter.append(delimiter);
+                }
+                for (int i = 0; i < sample.testData.length; i++) {
+                    double data1 = sample.testData[i];
+                    filewriter.append(String.valueOf(data1));
+                    filewriter.append(delimiter);
+                }
+
+                for (int i = 0; i < sample.outputData.length; i++) {
+                    double data1 = sample.outputData[i];
+                    filewriter.append(String.valueOf(data1));
+                    filewriter.append(delimiter);
+                }
+
+                filewriter.append(String.valueOf(sample.sampleError));
+                filewriter.append(newLine);
+
+                samNum++;
+            }
+            filewriter.flush();
+        } catch (IOException e) {
+            System.out.println("Error in exporting CSV !!!");
+        }
+
+    }
+
+    /**
+     * print all the sample in data
+     *
+     * @param data the collection of data
+     * @deprecated ONLY FOR DEBUGGING
+     */
+    public static void printSampleData(Data data) {
+
+        int samNum = 0;
+        for (Data.Sample sample : data.SampleList) {
+
+            StringBuilder str = new StringBuilder();
+            str.append(String.format("D%d ", samNum)).append((char) 9);
+            for (int i = 0; i < sample.inputData.length; i++) {
+                double data1 = sample.inputData[i];
+                str.append(String.format("I%d=%.3f ", i, data1)).append((char) 9);
+            }
+            for (int i = 0; i < sample.testData.length; i++) {
+                double data1 = sample.testData[i];
+                str.append(String.format("T%d=%.3f ", i, data1)).append((char) 9);
+            }
+
+            for (int i = 0; i < sample.outputData.length; i++) {
+                double data1 = sample.outputData[i];
+                str.append(String.format("O%d=%.3f ", i, data1)).append((char) 9);
+            }
+            str.append(String.format("E=%.3f ", sample.sampleError));
+            System.out.println(str);
+            samNum++;
+        }
+
+    }
 
 }
