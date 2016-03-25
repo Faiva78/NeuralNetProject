@@ -30,7 +30,11 @@ public class Data {
         /**
          * sample sampleError
          */
-        double sampleError ;
+        //double sampleError =1;
+        
+         public Rms sampleRms=new Rms();
+        
+        
 
     }
 
@@ -39,7 +43,7 @@ public class Data {
      */
     public ArrayList<Sample> SampleList = new ArrayList<>();
 
-    
+
     
     /**
      * add a new sample data
@@ -55,15 +59,16 @@ public class Data {
         SampleList.add(sample);
     }
 
+   
     /**
      * get the total error of all samples
-     *
+     *  
      * @return sum of the total error
      */
     public double getDataError() {
         double t = 0;
         for (Sample sample : SampleList) {
-            t = t + sample.sampleError;
+            t = t + sample.sampleRms.getSampletError();
         }
         return t;
     }

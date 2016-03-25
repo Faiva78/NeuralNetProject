@@ -5,8 +5,11 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
+import javafx.geometry.Orientation;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
+
 
 /**
  * Enviroment to test the nets
@@ -36,22 +39,22 @@ public class Enviroment extends JPanel {
      */
     //public ArrayList<Net> FitnessList = new ArrayList<>();
     public JFrame frame;
+    public JSlider slide1;
+    
 
     private double xx_old = 0;
     private double yy_old = 0;
     private long Epoch = 0;
     private long partialTraining = 0;
 
-    //numner of trainig loops
+    
     public int NumOfEpochs = 1;
-
-    public String topo="1,1";
-    // minimum fitness error
+    public String topo = "1,1";  
     public double minError = 1;
-
     public long delay = 1000;
     public double numOfSamples = 10;
 
+    
     public static void main(String[] args) {
 
         Enviroment env = new Enviroment();
@@ -59,32 +62,32 @@ public class Enviroment extends JPanel {
         Func function = new Func("(sin((2*x)*3.1416)+1)/2");
 
         //train the net with the function        
-        Train.useErrorsMode = true;
         BackPropagation.ETA = 1;
-        BackPropagation.MOMENTUM = 0.1;
-        env.topo="1,8,1";
+        BackPropagation.MOMENTUM = 0.2;
+        env.topo = "1,7,1";
         env.NumOfEpochs = 50000;
         env.delay = 500;
-        env.minError = 0.210;
+        env.minError = 0.0050;
         env.numOfSamples = 30;
         env.TrainFunction(function, false);
 
         Uti.printNetData(env.net, env.data);
 
         Uti.DataFunc1P(function, 0, 1, 0.01, env.data);
+
         Feedforward.evaluate(env.net, env.data);
 
         //export and save nets NetData on CSV
         Uti.saveNetAndDataCSV(env.net, env.data);
     }
-    
+
     /**
      * train enviroment for afunctions
      *
      * @param function he function to train
      * @param load
      */
-    public void TrainFunction(Func function, boolean load) {  //TODO  develop enviroment 
+    public void TrainFunction(Func function, boolean load) {
 
         initFrame();
         String fileLocation = "C:\\Users\\alessia/TestNet0.net";
@@ -113,7 +116,6 @@ public class Enviroment extends JPanel {
             //increase the counter of partial trainings
             partialTraining++;
 
-            //Train.TrainNet(net, data);
             Train.trainNetRandom(net, data);
 
             if ((System.currentTimeMillis() - time) > delay) {
@@ -124,7 +126,7 @@ public class Enviroment extends JPanel {
                 // reset the current time
                 time = System.currentTimeMillis();
 
-            } 
+            }
 
             boolean err = (data.getDataError() < minError);
             if (err) {
@@ -132,10 +134,9 @@ public class Enviroment extends JPanel {
                 break;
             }
 
-        } 
+        }
 
     }
-    
 
     private void initFrame() {
         frame = new JFrame();
@@ -143,6 +144,12 @@ public class Enviroment extends JPanel {
         frame.setSize(640, 480);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+        
+        slide1=new JSlider();
+        //frame.add(slide1); // XXX
+        slide1.setSize(100, 50);
+        slide1.setBounds(1, 10, 10, 10);
+        
         //this.setSize(frame.getWidth()/2, frame.getHeight()/2);
     }
 
@@ -167,12 +174,17 @@ public class Enviroment extends JPanel {
         int h = this.getHeight();
         int w = this.getWidth();
         g2d.setColor(Color.BLACK);
-        double bat = 0;
+
         double xx = 0;
         double yy = 0;
+        
+        double err = 0;
+        double bat = 0;
+        
+        err = data.getDataError();
+        bat = Train.trainingBatches;
 
-        bat = Train.trainingBatches;// NetList.get(0).trainingBatches;
-        yy = (((1 - data.getDataError())) * h);
+        yy = ((1 - err) * h);
         xx = ((bat / NumOfEpochs) * w);
 
         g2d.draw(new Line2D.Double(xx_old, yy_old, xx, yy));
@@ -231,7 +243,5 @@ public class Enviroment extends JPanel {
         g2d.drawString(str.toString(), border + (spacing * 1), fontSize * 3);
 
     }
-
-    
 
 }

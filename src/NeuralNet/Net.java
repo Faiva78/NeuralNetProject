@@ -4,11 +4,8 @@ import java.util.ArrayList;
 
 
 public class Net  {
-    //TODO implementing momentum
 
-    /*  ------------------------------------
-     -------------CLASS FILEDS-----------
-     ------------------------------------*/
+
     /**
      * List of neuron layers
      */
@@ -26,10 +23,6 @@ public class Net  {
      *
      */
     private final String Topology = "";
-
-    //  ------------------------------------ 
-    //  -------------CLASS METODS-----------
-    //  ------------------------------------
 
     /**
      * Create a new layer in the net

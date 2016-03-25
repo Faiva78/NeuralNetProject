@@ -8,8 +8,9 @@ package NeuralNet;
 public final class Feedforward {
     
     public static final void evaluate(Net net, Data.Sample sample ){
-    
-    sample.sampleError = 0;
+   
+    //clear the sample error data
+    sample.sampleRms.clear();
 
         // for as many layers in the net
         for (int layerNum = 0; layerNum < net.LayerList.size(); layerNum++) {
@@ -37,12 +38,9 @@ public final class Feedforward {
 
                     // retrieve and add neuron output value to dataset
                     sample.outputData[neuronNum] = layer.layerNeurons.get(neuronNum).A_activation;
-
+                    
                     // Calculate the neuron square mean deltaError 
-                    //neuron.E_error = 
-                    // sum the total output deltaError
-                    sample.sampleError = sample.sampleError + Func.meanError(sample.testData[neuronNum], sample.outputData[neuronNum]);
-
+                    sample.sampleRms.updateError(sample);
                 }
                 // finish parsing the layer neurons
             }

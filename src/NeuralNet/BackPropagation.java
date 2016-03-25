@@ -134,7 +134,7 @@ public class BackPropagation {
                 for (Assone axonFrom : neuron.axonFrom) {
 
                     // update the weight with eta and momentum
-                    axonFrom.weight = axonFrom.weight - ((ETA * axonFrom.deltaError) + (MOMENTUM * axonFrom.deltaError_1)); // plus momentum * delteE-1
+                    axonFrom.weight = axonFrom.weight - ((ETA * axonFrom.deltaError) + (MOMENTUM * axonFrom.deltaError_1));
 
                     //update the last deltaerror with current
                     axonFrom.deltaError_1 = axonFrom.deltaError;

@@ -375,7 +375,7 @@ public class Uti {
 
         for (int i = 0; i < sample.outputData.length; i++) {
 
-            System.out.format("in:%.0f out:%.2f test:%.0f err:%.2f%n", sample.inputData[0], sample.outputData[0], sample.testData[0], sample.sampleError);
+            System.out.format("in:%.0f out:%.2f test:%.0f err:%.2f%n", sample.inputData[0], sample.outputData[0], sample.testData[0], sample.sampleRms.getSampletError());
         }
     }
 
@@ -539,7 +539,7 @@ public class Uti {
                     filewriter.append(delimiter);
                 }
 
-                filewriter.append(String.valueOf(sample.sampleError));
+                filewriter.append(String.valueOf(sample.sampleRms.getSampletError()));
                 filewriter.append(newLine);
 
                 samNum++;
@@ -577,7 +577,7 @@ public class Uti {
                 double data1 = sample.outputData[i];
                 str.append(String.format("O%d=%.3f ", i, data1)).append((char) 9);
             }
-            str.append(String.format("E=%.3f ", sample.sampleError));
+            str.append(String.format("E=%.3f ", sample.sampleRms.getSampletError()));
             System.out.println(str);
             samNum++;
         }
