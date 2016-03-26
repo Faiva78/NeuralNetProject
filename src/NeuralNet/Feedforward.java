@@ -5,9 +5,16 @@ package NeuralNet;
  *
  * @author faiva78
  */
-public final class Feedforward {
+public  class Feedforward {
     
-    public static final void evaluate(Net net, Data.Sample sample ){
+    public  long trainingBatches=0;
+    public  Net net;
+    public Data data;
+
+    public void train(){
+    }
+    
+    public   void evaluate(Net net, Data.Sample sample ){
    
     //clear the sample error data
     sample.sampleRms.clear();
@@ -49,10 +56,17 @@ public final class Feedforward {
     }
     
     
-   public static final void  evaluate(Net net, Data data){
+   public void  evaluate(Net net, Data data){
         for (Data.Sample sample : data.SampleList) {
             evaluate(net, sample);
         }
     }
+
+    public Feedforward(Net net, Data data) {
+        this.net = net;
+        this.data = data;
+    }
     
+   
+   
 }

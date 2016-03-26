@@ -13,6 +13,66 @@ public class Uti {
 
     public static char tab = (char) 9;
 
+    
+    public static double[] copyArray( double[] source){
+        double[] ret = new double[source.length];
+        
+        for (int i = 0; i < source.length; i++) {
+            ret[i] = source[i];
+        }
+        return ret;
+    }
+    
+    
+    
+    public static int countWeights(Net net) {
+
+        int count = 0;
+        for (Layer LayerList : net.LayerList) {
+            for (Neurone layerNeuron : LayerList.layerNeurons) {
+                for (Assone axonFrom : layerNeuron.axonFrom) {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+
+    }
+
+    static public double[] serialize(Net net) {
+
+        double[] out = new double[countWeights(net)];
+
+        int count = 0;
+        for (Layer LayerList : net.LayerList) {
+            for (Neurone layerNeuron : LayerList.layerNeurons) {
+                for (Assone axonFrom : layerNeuron.axonFrom) {
+                    out[count] = axonFrom.weight;
+                    count++;
+                }
+            }
+        }
+
+        return out;
+    }
+
+    static public void deserialize(Net net, double[] serial) {
+
+        if (countWeights(net) == serial.length) {
+            int count = 0;
+            for (Layer LayerList : net.LayerList) {
+                for (Neurone layerNeuron : LayerList.layerNeurons) {
+                    for (Assone axonFrom : layerNeuron.axonFrom) {
+                        axonFrom.weight = serial[count];
+                        count++;
+                    }
+                }
+            }
+        }
+
+    }
+
     static public void PrintAssone(Assone assone) {
 
         System.out.print(new StringBuilder().append("Axon").append(tab));
@@ -387,7 +447,6 @@ public class Uti {
         String Extension = ".csv";
         int num = 0;
 
-
         StringBuilder fileLocation = new StringBuilder();
 
         //create a file string
@@ -400,7 +459,7 @@ public class Uti {
         info.append(net.getTopology());
         info.append(delimiter);
 
-            //info.append("Training cost: ");
+        //info.append("Training cost: ");
         //info.append(String.valueOf(Train.TrainingCost));
         //info.append(delimiter);
         info.append("Overall error: ");

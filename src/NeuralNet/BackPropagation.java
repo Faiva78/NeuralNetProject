@@ -6,20 +6,45 @@
 package NeuralNet;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  *
  * @author alessia
  */
-public class BackPropagation {
-    
-    public static double ETA=1;
-    public static double MOMENTUM=0.1;
-    
-    public static void evaluate(Net net, Data.Sample sample){
-        
-        
+public class BackPropagation extends Feedforward{
+  
+    public  double ETA=1;
+    public  double MOMENTUM=0.1;
+    private final Random rand = new Random();
 
+    public BackPropagation(Net net, Data data) {
+        super(net, data);
+    }
+
+    
+    public void train(Net net,Data data){
+
+        // for as many as samples
+        for (int i = 0; i < data.SampleList.size(); i++) {
+
+            // get a random sample
+            Data.Sample sample = data.SampleList.get(rand.nextInt(data.SampleList.size()));
+            
+            //evaluate
+            evaluate(net, sample);
+
+            //learn
+            train(net, sample);
+   
+        }
+        
+             trainingBatches++;
+    }
+    
+    
+    public void train(Net net, Data.Sample sample){
+        
         // declare the derivations variables NOT WORKING WELL!!!
         // work first on the last output layer
         Layer outlayer = net.LayerList.get(net.LayerList.size() - 1);
@@ -119,7 +144,7 @@ public class BackPropagation {
     /**
      * Update all the weight with the eta learning rate
      */
-    private static void updateAllWeights(Net net) {
+    private  void updateAllWeights(Net net) {
 
         //for every layer excluded the first (no weights availables)
         for (int i = 1; i < net.LayerList.size(); i++) {
