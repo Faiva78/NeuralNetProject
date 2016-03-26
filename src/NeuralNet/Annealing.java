@@ -26,7 +26,7 @@ public class Annealing extends Feedforward {
 
         evaluate(net, data);
         double bestError = data.getDataError();
-        double currentError = 1;
+        double currentError = 10;
         double[] best = Uti.serialize(net);
 
         double[] test = Uti.copyArray(best);
@@ -43,12 +43,12 @@ public class Annealing extends Feedforward {
                 best = Uti.serialize(net);
                 test = Uti.copyArray(best);
                 bestError = currentError;
+                System.out.println(String.format("Best found %d %n", i));
             }
             temp *= ratio;
 
         }
         Uti.deserialize(net, best);
-        trainingBatches++;
     }
 
     private void ramdomi(double[] test) {

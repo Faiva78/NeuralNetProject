@@ -6,10 +6,6 @@ package NeuralNet;
  * @author faiva78
  */
 public  class Feedforward {
-    
-    public  long trainingBatches=0;
-    public  Net net;
-    public Data data;
 
     public void train(){
     }
@@ -63,8 +59,8 @@ public  class Feedforward {
     }
 
     public Feedforward(Net net, Data data) {
-        this.net = net;
-        this.data = data;
+     //   this.net = net;
+       // this.data = data;
     }
     
    

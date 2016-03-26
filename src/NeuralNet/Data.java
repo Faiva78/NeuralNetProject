@@ -66,10 +66,24 @@ public class Data {
      * @return sum of the total error
      */
     public double getDataError() {
+        
+        
         double t = 0;
         for (Sample sample : SampleList) {
             t = t + sample.sampleRms.getSampletError();
         }
         return t;
     }
+    public double getMaxError(){
+        double maxErr=0;
+    
+        for (Sample sample : SampleList) {
+            double thisErr= sample.sampleRms.getSampletError();
+            if (thisErr>maxErr) {
+                maxErr=thisErr;
+            }
+        }
+        return maxErr;
+    }
+    
 }

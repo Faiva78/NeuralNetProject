@@ -38,8 +38,6 @@ public class BackPropagation extends Feedforward{
             train(net, sample);
    
         }
-        
-             trainingBatches++;
     }
     
     
