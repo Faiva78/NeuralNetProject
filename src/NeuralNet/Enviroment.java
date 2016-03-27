@@ -28,9 +28,9 @@ public class Enviroment {
     public Net net = new Net();
 
     public JFrame frame;
-    public JTrainPanel trainPanel;
+    public JTrainHistoryPanel trainPanel;
     public JDataPanel dataPanel;
-    public JTextPanel textPanel;
+    public JTexInfotPanel textPanel;
 
     public JPanel controls;
     public JSlider sliderMU;
@@ -39,9 +39,11 @@ public class Enviroment {
     public JTextField textETA;
     public JButton startButton;
 
+   // public JDataManagerPanel jdataManagerPanel;
+            
     public long Epoch = 0;
     public long partialTraining = 0;
-    public ErrorTrack errorTrack = new ErrorTrack();
+   // public ErrorTrack errorTrack = new ErrorTrack();
 
     public int NumOfEpochs = 1;
     public String topo = "1,1";
@@ -63,7 +65,7 @@ public class Enviroment {
 
         //Func function = new Func("e^-(((x-0.5)^2)/(0.2^2))"); // gaussiana : min 3 neurons
         //Func function = new Func("(sin((3*x)*3.1416)+1)/2"); // no va!
-        Func function = new Func("(sin((3*x)*3.1416)+1)/2");
+        Func function = new Func("(sin((2*x)*3.1416)+1)/2");
         //Func function = new Func("(tanh((x*4)-2)+1)/2");
 
         env.TrainFunction(function, false);
@@ -97,12 +99,12 @@ public class Enviroment {
     public void TrainFunction(Func function, boolean load) {
 
         //set up enviroment
-        topo = "1,7,1";
+        topo = "1,8,1";
         NumOfEpochs = 25000;
         delay = 250;
         minError = 0.020;
         numOfSamples = 30;
-        errorTrack.lenght = 2500;
+        data.errorTrack.lenght = 2500;
 
         // set up the learning algo
         backPropagation.ETA = 1;
@@ -141,7 +143,7 @@ public class Enviroment {
                 backPropagation.train(net, data);
 
                 //add the error to track
-                errorTrack.add(data.getDataError());
+               data.errorTrack.add(data.getDataError());
 
                 // paint the panel
                 if (timer.check()) {
@@ -152,7 +154,7 @@ public class Enviroment {
                 }
 
                 // exit if satisfied minimum error
-                boolean err = (errorTrack.mean() < minError);
+                boolean err = (data.errorTrack.mean() < minError);
                 if (err) {
                     Simu = false;
                     break;
@@ -195,25 +197,31 @@ public class Enviroment {
         frame.setLayout(new GridLayout(2, 2));
 
         // text panel
-        textPanel = new JTextPanel(this);
+        textPanel = new JTexInfotPanel(this);
         textPanel.setVisible(true);
         textPanel.setSize(frame.getWidth(), 120);
 
         // set up trainPanel
-        trainPanel = new JTrainPanel(this);
+        trainPanel = new JTrainHistoryPanel();
         trainPanel.setVisible(true);
 
         //set up dataPanel
-        dataPanel = new JDataPanel(this);
+        //dataPanel = new JDataPanel(this);
         dataPanel.setVisible(true);
 
         initPanelSliders();
 
+        //jdataManagerPanel = new JDataManagerPanel(this);
+        //jdataManagerPanel.setVisible(true);
+        
         //add frame panels and controls
+      
         frame.add(trainPanel);
         frame.add(dataPanel);
         frame.add(textPanel);
         frame.add(controls);
+        //frame.add(jdataManagerPanel);
+        //frame.add(jdataManagerPanel);
 
         // show frame
         frame.setVisible(true);

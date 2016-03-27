@@ -5,6 +5,8 @@
  */
 package NeuralNet;
 
+import javafx.application.Application;
+
 /**
  *
  * @author alessia
@@ -20,6 +22,9 @@ public final class Timer {
             }
     
     return false;
+    }
+
+    public Timer() {
     }
     
     public void reset(){
@@ -37,6 +42,7 @@ public final class Timer {
 
     public void setTimeOut(long timeOut) {
         this.timeOut = timeOut;
+        reset();
     }
  
 

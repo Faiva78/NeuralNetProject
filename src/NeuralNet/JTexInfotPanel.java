@@ -16,23 +16,30 @@ import javax.swing.JPanel;
  *
  * @author alessia
  */
-public class JTextPanel extends JPanel {
+public class JTexInfotPanel extends JPanel {
 
     public Enviroment env;
 
     private Image Img;
 
-    public JTextPanel(Enviroment env) {
+    public JTexInfotPanel(Enviroment env) {
         this.env = env;
         
     }
 
+    public JTexInfotPanel() {
+    }
+    
+    
+
     @Override
-    public void paint(Graphics gg) {
-        super.paint(gg); //To change body of generated methods, choose Tools | Templates.
+    public void paint(Graphics g) {
+        super.paint(g); //To change body of generated methods, choose Tools | Templates.
         
-        Graphics2D g2d = (Graphics2D) gg;
-        
+        Graphics2D g2d = (Graphics2D) g;
+        if (env!=null) {
+            
+       
        
         Img = createImage(this.getWidth(), this.getHeight());
 
@@ -42,6 +49,8 @@ public class JTextPanel extends JPanel {
         drawDataText(g2d_buff);
 
         g2d.drawImage(Img, 0, 0, null);
+        
+         }
 
     }
 
@@ -57,7 +66,7 @@ public class JTextPanel extends JPanel {
         // error
         g2d.setFont(new Font("arial", Font.PLAIN, fontSize));
         StringBuilder str = new StringBuilder();
-        str.append(String.format("Err mean: %.5f", env.errorTrack.mean()));
+        str.append(String.format("Err mean: %.5f", env.data.errorTrack.mean()));
         g2d.drawString(str.toString(), border + (spacing * 0), fontSize);
 
         //epoch
@@ -74,7 +83,7 @@ public class JTextPanel extends JPanel {
         //errDer
         str = new StringBuilder();
         //long batcSec = (long) (((double) env.partialTraining / (double) env.delay) * 1000);
-        str.append(String.format("errDev: %.5f", env.errorTrack.meanDer()));
+        str.append(String.format("errDev: %.5f", env.data.errorTrack.meanDer()));
         g2d.drawString(str.toString(), border + (spacing * 0), fontSize * 4);
 
 //-------------------------------------------------------------

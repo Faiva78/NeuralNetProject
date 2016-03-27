@@ -28,6 +28,8 @@ public class NewJFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         jButton1 = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -39,6 +41,12 @@ public class NewJFrame extends javax.swing.JFrame {
             }
         });
         getContentPane().add(jButton1, new java.awt.GridBagConstraints());
+
+        jLabel1.setText("jLabel1");
+        getContentPane().add(jLabel1, new java.awt.GridBagConstraints());
+
+        jTextField1.setText("jTextField1");
+        getContentPane().add(jTextField1, new java.awt.GridBagConstraints());
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -84,5 +92,7 @@ public class NewJFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }

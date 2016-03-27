@@ -22,6 +22,11 @@ public class BackPropagation extends Feedforward{
         super(net, data);
     }
 
+    public BackPropagation() {
+        super(null, null);
+    }
+
+    
     
     public void train(Net net,Data data){
 

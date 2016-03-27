@@ -403,6 +403,24 @@ public class Uti {
         }
     }
 
+    static  String[] DoubleArrayToString(double[] d){
+        String[] str = new String[d.length];
+        for (int i = 0; i < d.length; i++) {
+            str[i] = String.valueOf(  d[i]);
+        }
+    return str;
+    }
+    
+    static public String ArrayToString(String[] str){
+        StringBuilder ss = new StringBuilder();
+        for (int i = 0; i < str.length-1; i++) {
+            ss.append(str[i]).append(",");
+        }
+        ss.append(str[str.length-1]);
+    return ss.toString();
+    }
+    
+    
     /**
      * convert a function with 1 free parameter in a data format
      *

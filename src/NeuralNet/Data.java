@@ -42,7 +42,7 @@ public class Data {
      * List of sample data
      */
     public ArrayList<Sample> SampleList = new ArrayList<>();
-
+    public ErrorTrack errorTrack = new ErrorTrack();
 
     
     /**
