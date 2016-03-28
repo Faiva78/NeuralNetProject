@@ -10,7 +10,11 @@ public final class Rms {
     private double error=0;
     private double size=0;
     
-     public void updateError(Data.Sample sample){
+    /** update the error of the sample data
+     *
+     * @param sample
+     */
+    public void updateError(Sample sample){
         
         // for every output data (neuron number of last layer)
         for (int i = 0; i < sample.outputData.length; i++) {
@@ -24,6 +28,10 @@ public final class Rms {
         }   
     }
      
+    /** return the error 
+     *
+     * @return
+     */
     public double getSampletError(){
         double err=0;
         if (size==0) {

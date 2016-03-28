@@ -56,7 +56,7 @@ public final class JFunctionPanel extends JPanel {
             old_Y=-10;
             
             for (int i = 0; i < data.SampleList.size(); i++) {
-                Data.Sample sample = data.SampleList.get(i);
+                Sample sample = data.SampleList.get(i);
                 
                 double test = sample.testData[0];
                 

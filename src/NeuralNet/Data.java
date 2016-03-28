@@ -7,36 +7,6 @@ import java.util.ArrayList;
  */
 public class Data {
 
-    /**
-     * base sample class for the data collection
-     */
-    public class Sample {
-
-        /**
-         * input data
-         */
-        double[] inputData;
-
-        /**
-         * desidered test data
-         */
-        double[] testData;
-
-        /**
-         * output data of the net
-         */
-        double[] outputData;
-
-        /**
-         * sample sampleError
-         */
-        //double sampleError =1;
-        
-         public Rms sampleRms=new Rms();
-        
-        
-
-    }
 
     /**
      * List of sample data
@@ -52,7 +22,7 @@ public class Data {
      * @param test array of double with the expected data
      */
     public void addSample(double[] in, double[] test) {
-        Sample sample = new Sample();
+        Sample sample = new Sample(this);
         sample.inputData = in;
         sample.testData = test;
         sample.outputData = new double[test.length];

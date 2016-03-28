@@ -6,18 +6,16 @@
 package NeuralNet;
 
 import java.util.ArrayList;
-import java.util.Random;
-
 /**
  *
  * @author alessia
  */
-public class BackPropagation extends Feedforward{
-  
-    public  double ETA=1;
-    public  double MOMENTUM=0.1;
-    private final Random rand = new Random();
+public class BackPropagation extends Feedforward {
 
+    public double ETA = 1;
+    public double MOMENTUM = 0.1;
+    
+    
     public BackPropagation(Net net, Data data) {
         super(net, data);
     }
@@ -26,28 +24,38 @@ public class BackPropagation extends Feedforward{
         super(null, null);
     }
 
-    
-    
-    public void train(Net net,Data data){
+    /**
+     * Train the net backpropagation with supplied data
+     *
+     * @param net
+     * @param data
+     */
+    public void train(Net net, Data data) {
 
+        // select the datadet mode
+        ArrayList<Sample> tmpSampleList = new ArrayList<>();
+
+        tmpSampleList = dataModifier.modifyList(data);
+        
         // for as many as samples
-        for (int i = 0; i < data.SampleList.size(); i++) {
-
-            // get a random sample
-            Data.Sample sample = data.SampleList.get(rand.nextInt(data.SampleList.size()));
+        for (Sample sample : tmpSampleList) {
             
             //evaluate
-            evaluate(net, sample);
+            evaluateSample(net, sample);
 
-            //learn
-            train(net, sample);
-   
+            //learn 
+            trainSample(net, sample);
         }
     }
-    
-    
-    public void train(Net net, Data.Sample sample){
-        
+
+    /**
+     * train a single sample with backpropagation
+     *
+     * @param net
+     * @param sample
+     */
+    private void trainSample(Net net, Sample sample) {
+
         // declare the derivations variables NOT WORKING WELL!!!
         // work first on the last output layer
         Layer outlayer = net.LayerList.get(net.LayerList.size() - 1);
@@ -140,14 +148,13 @@ public class BackPropagation extends Feedforward{
         }
         /// the new weights MUST BE updated after the full propagation
         updateAllWeights(net);
-    
-    
+
     }
-    
+
     /**
      * Update all the weight with the eta learning rate
      */
-    private  void updateAllWeights(Net net) {
+    private void updateAllWeights(Net net) {
 
         //for every layer excluded the first (no weights availables)
         for (int i = 1; i < net.LayerList.size(); i++) {
@@ -172,10 +179,5 @@ public class BackPropagation extends Feedforward{
         }
 
     }
-    
-    
-    
+
 }
-
-
-

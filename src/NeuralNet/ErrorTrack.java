@@ -20,10 +20,10 @@ public class ErrorTrack {
 
     public void add(double item) {
         lastMean = mean();
-        if (array.size() >= lenght) {
+        while (array.size() >= lenght) {            
             array.remove(0);
         }
-
+   
         array.add(item);
 
     }
@@ -33,13 +33,22 @@ public class ErrorTrack {
         return (mean() - lastMean)*1000;
     }
 
-    public double mean() {
+    public double mean() { // FIXIT this cause exception
+        try {
+            
+        
         double mean = 0;
         for (int i = 0; i < array.size(); i++) {
             mean += array.get(i);
         }
 
         return mean / array.size();
+        
+        } catch (Exception e) {
+            System.out.println("errore in errortrack:"+e.getMessage());
+            return 0;
+        }
+        
     }
 
     public double min() {

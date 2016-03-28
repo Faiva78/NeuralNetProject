@@ -5,26 +5,43 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
+import javax.swing.JLabel;
+import javax.swing.text.JTextComponent;
 
 public class Uti {
 
     public static char tab = (char) 9;
+    public static Random rand = new Random();
 
-    
-    public static double[] copyArray( double[] source){
+    public static double[] copyArray(double[] source) {
         double[] ret = new double[source.length];
-        
+
         for (int i = 0; i < source.length; i++) {
             ret[i] = source[i];
         }
         return ret;
     }
-    
-    
-    
+
+    public static Comparator<Sample> SortBySamplesErrors = new Comparator<Sample>() {
+
+        @Override
+        public int compare(Sample o1, Sample o2) {
+            double aa = o1.testData[0];
+            double bb = o2.testData[0];
+            if (aa > bb) {
+                return 1;
+            } else if (aa == bb) {
+                return 0;
+            } else {
+                return -1;
+            }
+        }
+    };
+
     public static int countWeights(Net net) {
 
         int count = 0;
@@ -403,24 +420,23 @@ public class Uti {
         }
     }
 
-    static  String[] DoubleArrayToString(double[] d){
+    static String[] DoubleArrayToString(double[] d) {
         String[] str = new String[d.length];
         for (int i = 0; i < d.length; i++) {
-            str[i] = String.valueOf(  d[i]);
+            str[i] = String.valueOf(d[i]);
         }
-    return str;
+        return str;
     }
-    
-    static public String ArrayToString(String[] str){
+
+    static public String ArrayToString(String[] str) {
         StringBuilder ss = new StringBuilder();
-        for (int i = 0; i < str.length-1; i++) {
+        for (int i = 0; i < str.length - 1; i++) {
             ss.append(str[i]).append(",");
         }
-        ss.append(str[str.length-1]);
-    return ss.toString();
+        ss.append(str[str.length - 1]);
+        return ss.toString();
     }
-    
-    
+
     /**
      * convert a function with 1 free parameter in a data format
      *
@@ -449,7 +465,7 @@ public class Uti {
      *
      * @deprecated ONLY FOR DEBUGGING
      */
-    private static void PrintData(Data.Sample sample) {
+    private static void PrintData(Sample sample) {
 
         for (int i = 0; i < sample.outputData.length; i++) {
 
@@ -457,14 +473,11 @@ public class Uti {
         }
     }
 
-    public static void saveDataCSV(Net net, Data data,String fileLocation) {
-
+    public static void saveDataCSV(Net net, Data data, String fileLocation) {
 
         //StringBuilder fileLocation = new StringBuilder();
-
         //create a file string
         //fileLocation.append(Dir).append(file).append(String.valueOf(num)).append(Extension);
-
         //append net informations
         StringBuilder info = new StringBuilder();
         char delimiter = (char) 9;
@@ -486,8 +499,6 @@ public class Uti {
         Uti.fileAppendLine(info.toString(), fileLocation);
 
     }
-    
-    
 
     public static void printNetData(Net net, Data data) {
         int N = 0;
@@ -587,7 +598,7 @@ public class Uti {
             filewriter.append(newLine);
 
             int samNum = 0;
-            for (Data.Sample sample : data.SampleList) {
+            for (Sample sample : data.SampleList) {
 
                 filewriter.append(String.valueOf(samNum));
                 filewriter.append(delimiter);
@@ -620,6 +631,40 @@ public class Uti {
 
     }
 
+    public static ArrayList<Sample> getRandom(ArrayList<Sample> list) {
+        ArrayList<Sample> temp = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            temp.add(list.get(rand.nextInt(list.size())));
+        }
+        return temp;
+    }
+
+    public static double jLabelToDouble(JLabel c) {
+        String text = c.getText();
+        Double val = Double.valueOf(text);
+        return val;
+    }
+
+    public static double jTextToDouble(JTextComponent c) {
+        String text = c.getText();
+        Double val = Double.valueOf(text);
+        return val;
+    }
+
+    public static ArrayList<Sample> getRandBucker(ArrayList<Sample> list) {
+
+        ArrayList<Sample> a = new ArrayList();
+        ArrayList<Sample> b = new ArrayList();
+        a.addAll(list);
+
+        while (!a.isEmpty()) {
+            int k = rand.nextInt(a.size());
+            b.add(a.get(k));
+            a.remove(k);
+        }
+        return b;
+    }
+
     /**
      * print all the sample in data
      *
@@ -629,7 +674,7 @@ public class Uti {
     public static void printSampleData(Data data) {
 
         int samNum = 0;
-        for (Data.Sample sample : data.SampleList) {
+        for (Sample sample : data.SampleList) {
 
             StringBuilder str = new StringBuilder();
             str.append(String.format("D%d ", samNum)).append((char) 9);

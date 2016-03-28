@@ -37,7 +37,8 @@ public class Annealing extends Feedforward {
         double ratio = Math.exp(Math.log(stop / start) / (cycles - 1));
 
         for (int i = 0; i < cycles; i++) {
-
+            
+            // TODO think about this annealing better
             ramdomi(test);
             Uti.deserialize(net, test);
             evaluate(net, data);
