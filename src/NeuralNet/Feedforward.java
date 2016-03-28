@@ -30,9 +30,7 @@ public class Feedforward {
                 // if is th first neuron layer so update the neuron outputs with input NetData
                 if (layerNum == 0) {
 
-                    // TODO randomize input correction
                     // add the NetData from dataset inputData to input neuron values
-                    //layer.layerNeurons.get(neuronNum).A_activation = sample.inputData[neuronNum];
                     double rand = (Math.random() - 0.5) * 2;
                     double K = rand * dataModifier.randomInput;
                     layer.layerNeurons.get(neuronNum).A_activation = K + (sample.inputData[neuronNum]);
