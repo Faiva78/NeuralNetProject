@@ -21,6 +21,10 @@ public class Annealing extends Feedforward {
         super(net, data);
     }
 
+    public Annealing() {
+        super(null, null);
+    }
+
     
     void train(Net net, Data data) {
 

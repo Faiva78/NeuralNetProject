@@ -457,18 +457,13 @@ public class Uti {
         }
     }
 
-    public static void saveNetAndDataCSV(Net net, Data data) {
+    public static void saveDataCSV(Net net, Data data,String fileLocation) {
 
-        // export NetData
-        String Dir = System.getProperty("user.home");
-        String file = "/TestNet";
-        String Extension = ".csv";
-        int num = 0;
 
-        StringBuilder fileLocation = new StringBuilder();
+        //StringBuilder fileLocation = new StringBuilder();
 
         //create a file string
-        fileLocation.append(Dir).append(file).append(String.valueOf(num)).append(Extension);
+        //fileLocation.append(Dir).append(file).append(String.valueOf(num)).append(Extension);
 
         //append net informations
         StringBuilder info = new StringBuilder();
@@ -486,16 +481,13 @@ public class Uti {
         info.append((char) 13);
 
         //export net sample NetData
-        exportSampleDataToCSV(fileLocation.toString(), data);
+        exportSampleDataToCSV(fileLocation, data);
         //add the NetData info
-        Uti.fileAppendLine(info.toString(), fileLocation.toString());
-
-        // save the net
-        fileLocation = new StringBuilder();
-        Uti.saveNet(fileLocation.append(Dir).append(file).append(String.valueOf(num)).append(".net").toString(), net);
-        num++;
+        Uti.fileAppendLine(info.toString(), fileLocation);
 
     }
+    
+    
 
     public static void printNetData(Net net, Data data) {
         int N = 0;

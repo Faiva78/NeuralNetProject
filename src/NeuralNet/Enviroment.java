@@ -76,7 +76,7 @@ public class Enviroment {
 
         env.backPropagation.evaluate(env.net, env.data);
 
-        Uti.saveNetAndDataCSV(env.net, env.data);
+      //  Uti.saveDataCSV(env.net, env.data);
     }
 
     public Enviroment() {
