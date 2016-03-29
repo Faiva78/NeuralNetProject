@@ -275,7 +275,8 @@ public class Uti {
                 Neurone neuronFrom = axonFrom.fromNeuron;
 
                 // if is a bias then add the neuron to the layer
-                if (neuronFrom.isBias) {
+                //if (neuronFrom.isBias) {
+                 if (true) {
                     returnLayer.neuronBias = neuronFrom;
                 } else if (!Neuronlist.contains(neuronFrom)) {// if is not a bias and is not contained in the list so add it to the neurolist
                     Neuronlist.add(neuronFrom);

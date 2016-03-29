@@ -4,6 +4,11 @@ import java.util.ArrayList;
 
 public class Layer extends  Cellula{
     
+    /** the previous layer
+     *
+     */
+    public Layer previousLayer;
+    
     /** List of neurons in layer
      *
      */
@@ -12,7 +17,7 @@ public class Layer extends  Cellula{
     /** neuron of the bias of this layer
      *
      */
-    public Neurone neuronBias = new Neurone();
+    public Neurone neuronBias = new Neurone(1);
     
     /** the error of the layer dErrTot/dOut
      *
@@ -23,10 +28,6 @@ public class Layer extends  Cellula{
      *
      */
     public Layer() {
-    
-    neuronBias.A_activation=1;
-    
     }
     
-
 }
