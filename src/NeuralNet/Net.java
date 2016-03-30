@@ -46,7 +46,7 @@ public class Net {
             layer.previousLayer = layPrec;
         }
     }
-
+    
     /** add specified neurons to the layer
      *
      * @param layer 
@@ -73,7 +73,7 @@ public class Net {
             }
         }
     }
-
+    
     /**
      * Create a new layer in the net
      *
