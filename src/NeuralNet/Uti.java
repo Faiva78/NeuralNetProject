@@ -291,6 +291,7 @@ public class Uti {
     public static void LoadData(String Location, Data data) {
 
         char separator = (char) 9; //tab
+        char separator2 = ",".charAt(0); //comma
 
         //open a buffered reader
         try ( // open afile reader
@@ -300,50 +301,62 @@ public class Uti {
 
             // init the line string
             String line = "";
-            Integer num=0;
-            
+            Double num = 0.0;
+
             data.SampleList.clear();
-            
+
             while (line != null) {
                 line = reader.readLine();
-                String[] lineArr= line.split(String.valueOf(separator));
-                
+                String[] lineArr = line.split(String.valueOf(separator2));
+
                 // first line
-                if (num==0) {
-                     num++;
+                if (num == 0) {
+                    num++;
                     continue;
                 }
-                
-                
-                
+
                 // end line
-                String rr= lineArr[0] ;
+                String rr = lineArr[0];
                 if (rr.contains("Topology")) {
-                        num++;
-                         System.out.println("Data imported");
-                    return; 
+                    num++;
+                    System.out.println("Data imported");
+                    return;
                 }
-                
-               
-                
+
+                if (num > 400) {
+                    num++;
+                    // need to normialize
+                    data.normalizeSamples();
+                    System.out.println("Data imported");
+                    return;
+                }
+
                 // add data here
                 /////////////////
                 // datacample, impout, test , output, error
                 System.out.println(lineArr[0]);
-                double[] in ={Double.valueOf(lineArr[1])};
-                double[] out ={Double.valueOf(lineArr[2])};
-                
-                data.addSample(in,out);
+                //double[] in ={Double.valueOf(lineArr[0])};
+                double[] in = {Double.valueOf(num)};
+                double[] out = {Double.valueOf(lineArr[1])};
+
+                data.addSample(in, out);
                 num++;// end of while
             }
-
-            //read line
+             data.normalizeSamples();
+            System.out.println("Data imported");
         } catch (IOException e) {
             throw new Error("Error in loadData");
         }
 
     }
 
+    public  static  double normalize(double min, double max, double val){
+        double norm = (val-min)/(max-min);
+        return norm ;
+    };
+    
+    
+    
     /**
      * load a net
      *
