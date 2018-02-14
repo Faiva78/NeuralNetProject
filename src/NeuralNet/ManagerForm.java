@@ -7,7 +7,6 @@ package NeuralNet;
 
 import java.awt.FileDialog;
 
-
 /**
  *
  * @author faiva78
@@ -163,8 +162,7 @@ public class ManagerForm extends javax.swing.JFrame {
         });
         jToolBar1.add(jButton2);
 
-        jButtonAddSample.setText("Add Sample");
-        jButtonAddSample.setEnabled(false);
+        jButtonAddSample.setText("Load");
         jButtonAddSample.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonAddSampleActionPerformed(evt);
@@ -394,7 +392,7 @@ public class ManagerForm extends javax.swing.JFrame {
         jTabbedPane3.addTab("Output", jPanel5);
 
         jPanel8.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jPanel8.setLayout(new java.awt.GridLayout());
+        jPanel8.setLayout(new java.awt.GridLayout(1, 0));
 
         jButtonStop.setText("Stop");
         jButtonStop.setEnabled(false);
@@ -423,7 +421,7 @@ public class ManagerForm extends javax.swing.JFrame {
         jPanelTrainParametersLayout.setVerticalGroup(
             jPanelTrainParametersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelTrainParametersLayout.createSequentialGroup()
-                .addComponent(jTabbedPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
+                .addComponent(jTabbedPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 164, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -846,7 +844,7 @@ public class ManagerForm extends javax.swing.JFrame {
         jTrainHistoryPanel1.setLayout(jTrainHistoryPanel1Layout);
         jTrainHistoryPanel1Layout.setHorizontalGroup(
             jTrainHistoryPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 212, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
         jTrainHistoryPanel1Layout.setVerticalGroup(
             jTrainHistoryPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -897,12 +895,11 @@ public class ManagerForm extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanelTopology, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanelAlgorythms, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -970,7 +967,7 @@ public class ManagerForm extends javax.swing.JFrame {
 
     private void updateLabels() {
         // update the data output visualization
-        String format ="%.4f";
+        String format = "%.4f";
         jLabelErrorRms.setText(String.format(format, data.errorTrack.mean()));
         jLabelDErrorRms.setText(String.format(format, data.errorTrack.meanDer()));
         jLabelError.setText(String.format(format, data.getDataError()));
@@ -1127,9 +1124,10 @@ public class ManagerForm extends javax.swing.JFrame {
         String filename = fd.getFile();
         if (filename != null) {
             net = new Net();
-            Uti.loadNet(dir + "/" + filename, net);
+            Uti.loadNet(fd.getDirectory() + "/" + filename, net);
         }
     }//GEN-LAST:event_jButtonLoadNetActionPerformed
+
 
     private void jButtonSaveNEtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveNEtActionPerformed
         FileDialog fd = new FileDialog(this, "Save a net", FileDialog.SAVE);
@@ -1138,20 +1136,18 @@ public class ManagerForm extends javax.swing.JFrame {
         fd.setVisible(true);
         String filename = fd.getFile();
         if (filename != null) {
-            Uti.saveNet(dir + "/" + filename + extNet, net);
+            Uti.saveNet(fd.getDirectory() + filename + extNet, net);
         }
     }//GEN-LAST:event_jButtonSaveNEtActionPerformed
 
     private void jButtonDataSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDataSaveActionPerformed
-        // TODO fix file extension bug
-
+        // TODO: fix ext 
         FileDialog fd = new FileDialog(this, "Save net data", FileDialog.SAVE);
-        fd.setDirectory(dir);
         fd.setFile("*.csv");
         fd.setVisible(true);
         String filename = fd.getFile();
         if (filename != null) {
-            Uti.saveDataCSV(net, data, dir + "/" + filename + extCsv);
+            Uti.saveDataCSV(net, data, fd.getDirectory() + filename + extCsv);
         }
     }//GEN-LAST:event_jButtonDataSaveActionPerformed
 
@@ -1159,20 +1155,40 @@ public class ManagerForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jRadioButtonBackpropActionPerformed
 
     private void jButtonAddSampleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddSampleActionPerformed
-        data.addSample(new double[]{0}, new double[]{0});
-        tableDataModel1.fireTableDataChanged();
-        jTable1.repaint();
+        /// load data
+        FileDialog fd = new FileDialog(this, "Load data", FileDialog.LOAD);
+        fd.setDirectory(dir);
+        fd.setFile("*.csv");
+        fd.setVisible(true);
+        String filename = fd.getFile();
+        if (filename != null) {
+            net = new Net();
+            // new uti function 
+                
+                Uti.LoadData(fd.getDirectory() + filename,data);
+            
+            
+            //Uti.loadNet(fd.getDirectory() + "/" + filename, net);
+        }
+
+        //data.addSample(new double[]{0}, new double[]{0});
+        TableDataModel tableDataModel = new TableDataModel(data);
+        jTable1.setModel(tableDataModel);
+        //tableDataModel1.fireTableDataChanged();
+        //jTable1.repaint();
+
+
     }//GEN-LAST:event_jButtonAddSampleActionPerformed
 
     private void jButtonAddLayerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddLayerActionPerformed
         net.addLayer();
-        jpanelNeuron1.first=true;
+        jpanelNeuron1.first = true;
         jpanelNeuron1.repaint();
     }//GEN-LAST:event_jButtonAddLayerActionPerformed
 
     private void jButtonAddNeuronActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddNeuronActionPerformed
         net.addNeuron(net.LayerList.get(Integer.valueOf(jTextAddNeuronLayer.getText())), 1);
-        jpanelNeuron1.first=true;
+        jpanelNeuron1.first = true;
         jpanelNeuron1.repaint();
 
     }//GEN-LAST:event_jButtonAddNeuronActionPerformed
@@ -1181,7 +1197,7 @@ public class ManagerForm extends javax.swing.JFrame {
         net = new Net();
         net.createNet("0");
         jpanelNeuron1.net = net;
-        jpanelNeuron1.first=true;
+        jpanelNeuron1.first = true;
         jpanelNeuron1.repaint();
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -1193,7 +1209,7 @@ public class ManagerForm extends javax.swing.JFrame {
         // TODO add your handling code here:
 
         net.LayerList.get(Integer.valueOf(jTextAddNeuronLayer.getText())).layerNeurons.remove(0);
-        jpanelNeuron1.first=true;
+        jpanelNeuron1.first = true;
         jpanelNeuron1.repaint();
     }//GEN-LAST:event_jButtonAddNeuron1ActionPerformed
 
