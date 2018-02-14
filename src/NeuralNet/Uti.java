@@ -276,7 +276,7 @@ public class Uti {
 
                 // if is a bias then add the neuron to the layer
                 //if (neuronFrom.isBias) {
-                 if (true) {
+                if (true) {
                     returnLayer.neuronBias = neuronFrom;
                 } else if (!Neuronlist.contains(neuronFrom)) {// if is not a bias and is not contained in the list so add it to the neurolist
                     Neuronlist.add(neuronFrom);
@@ -286,6 +286,62 @@ public class Uti {
         // now we have all the neurons of layer -1
         returnLayer.layerNeurons = Neuronlist;
         return returnLayer;
+    }
+
+    public static void LoadData(String Location, Data data) {
+
+        char separator = (char) 9; //tab
+
+        //open a buffered reader
+        try ( // open afile reader
+                FileReader fileReader = new FileReader(Location)) {
+            //open a buffered reader
+            BufferedReader reader = new BufferedReader(fileReader);
+
+            // init the line string
+            String line = "";
+            Integer num=0;
+            
+            data.SampleList.clear();
+            
+            while (line != null) {
+                line = reader.readLine();
+                String[] lineArr= line.split(String.valueOf(separator));
+                
+                // first line
+                if (num==0) {
+                     num++;
+                    continue;
+                }
+                
+                
+                
+                // end line
+                String rr= lineArr[0] ;
+                if (rr.contains("Topology")) {
+                        num++;
+                         System.out.println("Data imported");
+                    return; 
+                }
+                
+               
+                
+                // add data here
+                /////////////////
+                // datacample, impout, test , output, error
+                System.out.println(lineArr[0]);
+                double[] in ={Double.valueOf(lineArr[1])};
+                double[] out ={Double.valueOf(lineArr[2])};
+                
+                data.addSample(in,out);
+                num++;// end of while
+            }
+
+            //read line
+        } catch (IOException e) {
+            throw new Error("Error in loadData");
+        }
+
     }
 
     /**
