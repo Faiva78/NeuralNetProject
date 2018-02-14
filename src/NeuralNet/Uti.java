@@ -323,7 +323,7 @@ public class Uti {
                     return;
                 }
 
-                if (num > 400) {
+                if (num > 300) {
                     num++;
                     // need to normialize
                     data.normalizeSamples();
